@@ -1,0 +1,4 @@
+@MyMovieApp.API_HostAddress = http://localhost:58114
+
+GET {{MyMovieApp.API_HostAddress}}/Omdb/movie/tt3896198
+Accept: application/json

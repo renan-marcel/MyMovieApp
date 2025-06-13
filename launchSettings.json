@@ -1,0 +1,15 @@
+{
+    "profiles": {
+        "Docker Compose": {
+            "commandName": "DockerCompose",
+            "commandVersion": "1.0",
+            "composeLaunchServiceName": "mymovieapp.api",
+            "serviceActions": {
+                "mymovieapp.api": "StartDebugging"
+            },
+            "launchBrowser": true,
+            "composeLaunchAction": "LaunchBrowser",
+            "composeLaunchUrl": "{Scheme}://localhost:{ServicePort}/Omdb/movie/tt3896198"
+        }
+    }
+}

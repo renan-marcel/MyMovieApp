@@ -1,0 +1,29 @@
+{
+    "profiles": {
+        "http": {
+            "commandName": "Project",
+            "launchBrowser": true,
+            "launchUrl": "todos",
+            "environmentVariables": {
+                "ASPNETCORE_ENVIRONMENT": "Development"
+            },
+            "dotnetRunMessages": true,
+            "applicationUrl": "http://localhost:5204"
+        },
+        "Container (Dockerfile)": {
+            "commandName": "Docker",
+            "launchBrowser": true,
+            "launchUrl": "{Scheme}://{ServiceHost}:{ServicePort}/Omdb/movie/tt3896198",
+            "environmentVariables": {
+                "ASPNETCORE_HTTP_PORTS": "8080",
+                "OMDb:ApiKey": "9c9d85ad",
+                "OMDb:ApiUri": "http://www.omdbapi.com"
+            },
+            "publishAllPorts": true,
+            "useSSL": false,
+            "httpPort": 5204,
+            "sslPort": 32770
+        }
+    },
+    "$schema": "http://json.schemastore.org/launchsettings.json"
+}

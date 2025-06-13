@@ -1,0 +1,64 @@
+version: "3.3"
+
+services:
+  db:
+    image: postgres:15
+    container_name: movie-api-db
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: moviedb
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - architecture-network-app
+
+  seq:
+    image: datalust/seq:latest
+    container_name: seq
+    environment:
+      - ACCEPT_EULA=Y
+      - SEQ_FIRSTRUN_ADMINPASSWORD=admin
+    ports:
+      - "5341:80"
+    volumes:
+      - seqdata:/data
+    networks:
+      - architecture-network-app
+
+  mymovieapp.api:
+    image: ${DOCKER_REGISTRY-}my-movieapp.api
+    build:
+      context: .
+      dockerfile: src/MyMovieApp.API/Dockerfile
+    environment:
+      ConnectionString:Database: "Host=db:5432; Database=moviedb; Username=postgres; Password=postgres"
+      ASPNETCORE_HTTP_PORTS: "8080"
+      OMDb:ApiKey: "9c9d85ad"
+      OMDb:ApiUri: "http://www.omdbapi.com"
+      Seq:ServerUrl: "http://seq:80"
+      Seq:ApiKey: ""
+    ports:
+      - "58114:8080"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - architecture-network-app
+    depends_on:
+      - db
+      - seq
+
+volumes:
+  pgdata:
+  seqdata:
+
+networks:
+  architecture-network-app:
+    driver: bridge
+    name: architecture-network-app
