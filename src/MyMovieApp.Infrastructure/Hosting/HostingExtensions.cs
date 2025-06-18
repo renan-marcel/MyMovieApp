@@ -37,6 +37,9 @@ public static class HostingExtensions
             .AddDataLayer(configuration)
             .AddApplicationHealtyChecks(configuration);
 
+        services.AddExceptionHandler<GlobalExceptionHandler>();
+        services.AddProblemDetails();
+
         return services;
     }
 
@@ -57,7 +60,7 @@ public static class HostingExtensions
         })
             .ConfigureHttpClient(c =>
             {
-                c.BaseAddress = new Uri(configuration["Omdb:ApiUri"]); // Your actual API base URL
+                c.BaseAddress = new Uri(configuration["Omdb:ApiUri"] ?? throw new InvalidOperationException("The configuration value for 'Omdb:ApiUri' must not be null or empty."));
             })
             .AddResilienceHandler("my-circuit-breaker", builder =>
             {
