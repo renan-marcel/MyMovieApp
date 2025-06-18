@@ -2,7 +2,7 @@
 
 public class Movie
 {
-    private Movie(string imdbId, string title, int year)
+    private Movie(string imdbId, string title, short year)
     {
         ImdbId = imdbId;
         Title = title;
@@ -11,7 +11,7 @@ public class Movie
 
     public string ImdbId { get; private set; }
     public string Title { get; private set; }
-    public int Year { get; private set; }
+    public short Year { get; private set; }
     public string Genre { get; set; } = default!;
     public string Director { get; set; } = default!;
     public string ImdbRating { get; set; } = default!;
@@ -21,19 +21,17 @@ public class Movie
 
     public virtual List<Actor> Actor { get; set; } = new();
 
-    public static Movie Create(string imdbId, string title, string? year)
+    public static Movie Create(string imdbId, string title, short year)
     {
         // Business rule: validate inputs
-        ArgumentException.ThrowIfNullOrEmpty(nameof(imdbId), imdbId);
-        ArgumentException.ThrowIfNullOrEmpty(nameof(title), title);
-        ArgumentException.ThrowIfNullOrEmpty(nameof(year), year);
-        if (!int.TryParse(year, out var parsedYear))
-            throw new ArgumentException("Year must be a valid integer.", nameof(year));
+        ArgumentException.ThrowIfNullOrEmpty(imdbId, nameof(imdbId));
+        ArgumentException.ThrowIfNullOrEmpty(title, nameof(title));
 
         // Business rule: First film: Constants.FirstYearMovie.
-        ArgumentOutOfRangeException.ThrowIfLessThan(parsedYear, Constants.FirstYearMovie, nameof(year));
+        ArgumentOutOfRangeException.ThrowIfLessThan(year, Constants.FirstYearMovie, nameof(year));
+        ArgumentOutOfRangeException.ThrowIfGreaterThan(year, DateTime.Today.Year + 1, nameof(year));
 
-        return new Movie(imdbId, title, parsedYear);
+        return new Movie(imdbId, title, year);
     }
 
     public void AddReview(string userOpinion, int userRating)

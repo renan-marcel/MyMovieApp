@@ -72,7 +72,7 @@ public class MovieRepository : IMovieRepository
             context.Entry(existingMovie).CurrentValues.SetValues(movie);
 
             var itensReviews = movie.Reviews
-                .Where(x => x.Id == Guid.Empty)
+                .Where(e => e.Movie is null)
                 .ToList();
 
             context.Reviews.AddRange(itensReviews);

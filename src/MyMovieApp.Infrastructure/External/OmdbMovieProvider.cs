@@ -55,8 +55,11 @@ public class OmdbMovieProvider : IOmdbMovieProvider
 
     private static Movie MapMovie(OmdbResponse response)
     {
-        var movie = Movie.Create(response.ImdbID, response.Title, response.Year);
+        if (!short.TryParse(response.Year, out var year))
+            throw new InvalidOperationException($"invalid year returned from OMDb API: '{response.Year}'.");
 
+        var movie = Movie.Create(response.ImdbID, response.Title, year);
+        
         movie.Genre = response.Genre ?? "N/A";
         movie.Director = response.Director ?? "N/A";
         movie.ImdbRating = response.ImdbRating ?? "N/A";
