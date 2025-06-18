@@ -10,7 +10,6 @@ using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Configurar o Serilog para usar o Seq
 builder.Host.UseSerilog((context, services, configuration) =>
 {
     configuration
@@ -38,6 +37,7 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
+    app.UseSwaggerUI();
     app.MapScalarApiReference(c =>
     {
         c.DotNetFlag = true;

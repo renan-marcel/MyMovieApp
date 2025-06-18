@@ -11,9 +11,7 @@ EXPOSE 8080
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 
 # Install clang/zlib1g-dev dependencies for native publishing
-RUN apt-get update \
-    && apt-get install -y --no-install-recommends \
-    clang zlib1g-dev
+RUN apt-get update && apt-get install -y --no-install-recommends clang zlib1g-dev
 
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
@@ -35,12 +33,7 @@ RUN dotnet publish "./MyMovieApp.API.csproj" -c $BUILD_CONFIGURATION -o /app/pub
 FROM base AS aotdebug
 USER root
 # Install GDB to support native debugging
-RUN apt-get update \
-    && apt-get install -y --no-install-recommends \
-    gdb
-
-# Install Curl to enable Health check on Docker-Compose
-RUN apt-get update && apt-get install -y --no-install-recommends curl
+RUN apt-get update && apt-get install -y --no-install-recommends  gdb curl
 
 USER app
 

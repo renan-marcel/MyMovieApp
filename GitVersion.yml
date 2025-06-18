@@ -1,0 +1,15 @@
+assembly-versioning-scheme: MajorMinorPatch
+mode: Mainline
+branches:
+  main:
+    mode: ContinuousDelivery
+    tag: ""
+  develop:
+    mode: ContinuousDeployment
+    tag: "dev"
+  feature:
+    regex: feature(s)?[/-]
+    mode: ContinuousDeployment
+    tag: "{BranchName}"
+ignore:
+  sha: []

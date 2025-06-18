@@ -44,9 +44,9 @@ services:
     image: ${DOCKER_REGISTRY-}my-movieapp.api
     build:
       context: .
-      dockerfile: src/MyMovieApp.API/Dockerfile
+      dockerfile: Dockerfile
     environment:
-      ConnectionString:Database: "Host=db:5432; Database=moviedb; Username=postgres; Password=postgres"
+      ConnectionString:Database: "Host=db:5432; Database=moviedb-app2; Username=postgres; Password=postgres"
       ASPNETCORE_HTTP_PORTS: "8080"
       OMDb:ApiKey: "9c9d85ad"
       OMDb:ApiUri: "http://www.omdbapi.com"

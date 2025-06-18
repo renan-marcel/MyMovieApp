@@ -1,0 +1,16 @@
+FROM mcr.microsoft.com/dotnet/aspnet:8.0
+
+USER root
+
+RUN apt-get update && apt-get install -y --no-install-recommends  curl
+
+USER app
+
+COPY . /app
+
+WORKDIR /app
+
+ENV DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false \
+    DOTNET_RUNNING_IN_CONTAINER=true
+
+ENTRYPOINT ["dotnet", "MyMovieApp.API.dll"]
