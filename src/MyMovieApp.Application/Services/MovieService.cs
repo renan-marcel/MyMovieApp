@@ -17,57 +17,63 @@ public class MovieService : IMovieService
         _omdbProvider = omdbProvider;
     }
 
-    public async Task<Movie> GetMovieByImdbIdAsync(string imdbId, CancellationToken cancellationToken)
+    public async Task<Movie> GetMovieByImdbIdAsync(CancellationToken cancellationToken, string imdbId)
     {
-        var movie = await _movieRepository.GetByImdbIdAsync(imdbId, cancellationToken);
+        var movie = await _movieRepository.GetByImdbIdAsync(cancellationToken, imdbId);
 
         if (movie == null)
         {
             // Fetch from OMDb if not in local database
             movie = await _omdbProvider.GetMovieByImdbIdAsync(imdbId);
             if (movie != null)
-            {
-                await _movieRepository.AddOrUpdateMovieAsync(movie, cancellationToken);
-            }
+                await _movieRepository.AddOrUpdateMovieAsync(cancellationToken, movie);
+            else
+                throw new KeyNotFoundException($"Movie with IMDb ID {imdbId} not found.");
         }
 
         return movie;
     }
 
-    public async Task<List<Movie>> SearchMoviesAsync(string title, int? year, CancellationToken cancellationToken)
+    public async Task<Movie> GetMovieByTitleAsync(CancellationToken cancellationToken, SearchRequestDto searchRequest)
     {
-        return await _movieRepository.SearchMoviesAsync(title, year, cancellationToken);
-    }
+        var movie = await _movieRepository.GetByTitleAsync(cancellationToken, searchRequest.Title, searchRequest.Year);
 
-    public async Task<Movie> CreateMovieReviewAsync(string imdbId, string userOpinion, int userRating, CancellationToken cancellationToken)
-    {
-        var movie = await GetMovieByImdbIdAsync(imdbId, cancellationToken);
         if (movie == null)
         {
-            throw new KeyNotFoundException($"Movie with IMDb ID {imdbId} not found.");
+            // Fetch from OMDb if not in local database
+            movie = await _omdbProvider.GetMovieByTitleAsync(searchRequest.Title, searchRequest.Year);
+            if (movie != null)
+                await _movieRepository.AddOrUpdateMovieAsync(cancellationToken, movie);
+            else
+                throw new KeyNotFoundException(
+                    $"Movie with title '{searchRequest.Title}\\{searchRequest.Year}' not found.");
         }
 
-        var review =  Review.Create(userOpinion, userRating);
-        movie.Reviews.Add(review);
-
-        await _movieRepository.AddOrUpdateMovieAsync(movie, cancellationToken);
         return movie;
     }
 
-    public async Task<Movie> CreateMovieReviewAsync(CreateMovieReviewDto dto, CancellationToken cancellationToken)
+    public async Task<Movie> CreateMovieReviewAsync(CancellationToken cancellationToken, string imdbId,
+        string userOpinion, byte userRating)
+    {
+        var movie = await GetMovieByImdbIdAsync(cancellationToken, imdbId);
+        if (movie == null) throw new KeyNotFoundException($"Movie with IMDb ID {imdbId} not found.");
+
+        movie.AddReview(userOpinion, userRating);
+
+        await _movieRepository.AddOrUpdateMovieAsync(cancellationToken, movie);
+        return movie;
+    }
+
+    public async Task<Movie> CreateMovieReviewAsync(CancellationToken cancellationToken, CreateMovieReviewDto dto)
     {
         ArgumentNullException.ThrowIfNull(dto, nameof(dto));
 
-        var movie = await GetMovieByImdbIdAsync(dto.ImdbId, cancellationToken);
-        if (movie == null)
-        {
-            throw new KeyNotFoundException($"Movie with IMDb ID {dto.ImdbId} not found.");
-        }
+        var movie = await GetMovieByImdbIdAsync(cancellationToken, dto.ImdbId);
+        if (movie == null) throw new KeyNotFoundException($"Movie with IMDb ID {dto.ImdbId} not found.");
 
-        var review = Review.Create(dto.UserOpinion, dto.UserRating);
-        movie.Reviews.Add(review);
+        movie.AddReview(dto.UserOpinion, dto.UserRating);
 
-        await _movieRepository.AddOrUpdateMovieAsync(movie, cancellationToken);
+        await _movieRepository.AddOrUpdateMovieAsync(cancellationToken, movie);
         return movie;
     }
 }

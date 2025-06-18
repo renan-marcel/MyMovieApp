@@ -29,26 +29,19 @@ CREATE TABLE "Reviews" (
     "Id" uuid NOT NULL,
     "UserOpinion" character varying(1000) NOT NULL,
     "UserRating" integer NOT NULL,
-    "MovieImdbId" text NOT NULL,
+    "ImdbId" text NOT NULL,
     CONSTRAINT "PK_Reviews" PRIMARY KEY ("Id"),
-    CONSTRAINT "FK_Reviews_Movies_MovieImdbId" FOREIGN KEY ("MovieImdbId") REFERENCES "Movies" ("ImdbId") ON DELETE CASCADE
+    CONSTRAINT "FK_Reviews_Movies_ImdbId" FOREIGN KEY ("ImdbId") REFERENCES "Movies" ("ImdbId") ON DELETE CASCADE
 );
 
 CREATE INDEX "IX_Actors_MovieImdbId" ON "Actors" ("MovieImdbId");
 
-CREATE INDEX "IX_Reviews_MovieImdbId" ON "Reviews" ("MovieImdbId");
-
-INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-VALUES ('20250613055426_Initial', '8.0.17');
-
-COMMIT;
-
-START TRANSACTION;
-
 CREATE INDEX idx_movies_title_year ON "Movies" ("Title", "Year");
 
+CREATE INDEX "IX_Reviews_ImdbId" ON "Reviews" ("ImdbId");
+
 INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-VALUES ('20250613074011_CreateIndexOfMovies', '8.0.17');
+VALUES ('20250618043336_CreateInitial', '8.0.17');
 
 COMMIT;
 

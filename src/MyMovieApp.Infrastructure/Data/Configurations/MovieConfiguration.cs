@@ -27,7 +27,7 @@ public class MovieConfiguration : IEntityTypeConfiguration<Movie>
 
         builder.Property(m => m.Year);
         builder.Property(m => m.Genre);
-        builder.Property(m => m.Director); 
+        builder.Property(m => m.Director);
         builder.Property(m => m.ImdbRating);
         builder.Property(m => m.Plot);
 
@@ -51,24 +51,9 @@ public class MovieConfiguration : IEntityTypeConfiguration<Movie>
                 .HasMaxLength(1000);
         });
 
-        builder.OwnsMany(m => m.Reviews, reviewBuilder =>
-        {
-            reviewBuilder.ToTable("Reviews");
-
-            reviewBuilder.WithOwner().HasForeignKey("MovieImdbId");
-
-            reviewBuilder.HasKey(r => r.Id);
-
-            reviewBuilder.Property(r => r.Id)
-                         .ValueGeneratedOnAdd();
-
-            reviewBuilder.Property(r => r.UserOpinion)
-                .IsRequired()
-                .HasMaxLength(1000);
-
-            reviewBuilder.Property(r => r.UserRating)
-                .IsRequired();
-        });
+        builder.HasMany(m => m.Reviews)
+            .WithOne(x => x.Movie)
+            .HasForeignKey(x => x.ImdbId);
 
         var navigationReviews = builder.Metadata.FindNavigation(nameof(Movie.Reviews));
         navigationReviews.SetPropertyAccessMode(PropertyAccessMode.Field);

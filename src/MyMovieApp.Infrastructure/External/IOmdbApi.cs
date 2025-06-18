@@ -5,7 +5,12 @@ namespace MyMovieApp.Infrastructure.External;
 
 public interface IOmdbApi
 {
-    // Exemplo de método para buscar detalhes de um filme pelo IMDb ID
+    [Get("/?apikey={apiKey}&t={title}&y={year}")]
+    Task<OmdbResponse?> GetMovieByTitleAsync(string apiKey, string title, short year);
+
     [Get("/?apikey={apiKey}&i={imdbId}")]
-    Task<OmdbResponse?> GetMovieAsync(string apiKey, string imdbId);
+    Task<OmdbResponse?> GetMovieByImdbIdAsync(string apiKey, string imdbId);
+
+    [Get("/?apikey={apiKey}&t={title}")]
+    Task<OmdbResponse?> GetMovieByTitleAsync(string apiKey, string title);
 }

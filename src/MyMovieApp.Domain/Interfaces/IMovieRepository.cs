@@ -4,7 +4,8 @@ namespace MyMovieApp.Domain.Interfaces;
 
 public interface IMovieRepository
 {
-    Task<Movie?> GetByImdbIdAsync(string imdbId, CancellationToken cancellationToken);
-    Task AddOrUpdateMovieAsync(Movie movie, CancellationToken cancellationToken);
-    Task<List<Movie>> SearchMoviesAsync(string title, int? year, CancellationToken cancellationToken);
+    Task<Movie?> GetByImdbIdAsync(CancellationToken cancellationToken, string imdbId);
+    Task<Movie?> GetByTitleAsync(CancellationToken cancellationToken, string title, short? year);
+    Task AddOrUpdateMovieAsync(CancellationToken cancellationToken, Movie movie);
+    Task<List<Movie>> SearchMoviesAsync(CancellationToken cancellationToken, string title, short? year);
 }

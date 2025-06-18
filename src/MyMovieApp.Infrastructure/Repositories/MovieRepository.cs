@@ -14,15 +14,37 @@ public class MovieRepository : IMovieRepository
         _contextFactory = contextFactory;
     }
 
-    public async Task<Movie?> GetByImdbIdAsync(string imdbId, CancellationToken cancellationToken)
+    public async Task<Movie?> GetByImdbIdAsync(CancellationToken cancellationToken, string imdbId)
     {
         await using var context = await _contextFactory.CreateDbContextAsync(cancellationToken);
         return await context.Movies.AsSplitQuery()
+            .AsTracking()
             .Include(m => m.Reviews)
+            .Include(m => m.Actor)
             .FirstOrDefaultAsync(m => m.ImdbId == imdbId, cancellationToken);
     }
 
-    public async Task<List<Movie>> SearchMoviesAsync(string title, int? year, CancellationToken cancellationToken)
+    public async Task<Movie?> GetByTitleAsync(CancellationToken cancellationToken, string title, short? year)
+    {
+        await using var context = await _contextFactory.CreateDbContextAsync(cancellationToken);
+
+        var query = context.Movies.AsQueryable();
+
+        if (!string.IsNullOrEmpty(title))
+            query = query.Where(m => m.Title.Contains(title));
+
+        if (year.HasValue)
+            query = query.Where(m => m.Year == year.Value);
+
+
+        return await query.AsSplitQuery()
+            .AsTracking()
+            .Include(m => m.Reviews)
+            .Include(m => m.Actor)
+            .FirstOrDefaultAsync(m => m.Title == title, cancellationToken);
+    }
+
+    public async Task<List<Movie>> SearchMoviesAsync(CancellationToken cancellationToken, string title, short? year)
     {
         await using var context = await _contextFactory.CreateDbContextAsync(cancellationToken);
         var query = context.Movies.AsQueryable();
@@ -33,11 +55,14 @@ public class MovieRepository : IMovieRepository
         if (year.HasValue)
             query = query.Where(m => m.Year == year.Value);
 
-        return await query.AsSplitQuery().Include(m => m.Reviews)
+        return await query.AsSplitQuery()
+            .AsTracking()
+            .Include(m => m.Reviews)
+            .Include(m => m.Actor)
             .ToListAsync(cancellationToken);
     }
 
-    public async Task AddOrUpdateMovieAsync(Movie movie, CancellationToken cancellationToken)
+    public async Task AddOrUpdateMovieAsync(CancellationToken cancellationToken, Movie movie)
     {
         await using var context = await _contextFactory.CreateDbContextAsync(cancellationToken);
         var existingMovie = await context.Movies.FirstOrDefaultAsync(m => m.ImdbId == movie.ImdbId, cancellationToken);
@@ -45,8 +70,12 @@ public class MovieRepository : IMovieRepository
         if (existingMovie != null)
         {
             context.Entry(existingMovie).CurrentValues.SetValues(movie);
-            context.Reviews.RemoveRange(existingMovie.Reviews);
-            context.Reviews.AddRange(movie.Reviews);
+
+            var itensReviews = movie.Reviews
+                .Where(x => x.Id == Guid.Empty)
+                .ToList();
+
+            context.Reviews.AddRange(itensReviews);
         }
         else
         {

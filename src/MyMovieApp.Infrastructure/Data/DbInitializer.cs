@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
 namespace MyMovieApp.Infrastructure.Data;
+
 public static class DbInitializer
 {
     public static async Task Initialize(IServiceProvider serviceProvider)
@@ -17,9 +18,6 @@ public static class DbInitializer
         await using var moviesDbContext = await moviesDbContextFactory.CreateDbContextAsync();
         var connectionString = moviesDbContext.Database.GetConnectionString();
         if ((await moviesDbContext.Database.GetPendingMigrationsAsync()).Any())
-        {
             await moviesDbContext.Database.MigrateAsync();
-        }
     }
 }
-

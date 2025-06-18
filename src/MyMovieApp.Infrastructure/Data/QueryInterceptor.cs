@@ -15,7 +15,7 @@ public class QueryInterceptor : DbCommandInterceptor
 
     public override InterceptionResult<DbCommand> CommandCreating(CommandCorrelatedEventData eventData,
         InterceptionResult<DbCommand> result)
-    { 
+    {
         _logger.LogInformation($"Creating Command Source: {eventData.CommandSource}");
         return base.CommandCreating(eventData, result);
     }
@@ -27,8 +27,9 @@ public class QueryInterceptor : DbCommandInterceptor
         return base.ReaderExecuted(command, eventData, result);
     }
 
-    public override ValueTask<DbDataReader> ReaderExecutedAsync(DbCommand command, CommandExecutedEventData eventData, DbDataReader result,
-        CancellationToken cancellationToken = new CancellationToken())
+    public override ValueTask<DbDataReader> ReaderExecutedAsync(DbCommand command, CommandExecutedEventData eventData,
+        DbDataReader result,
+        CancellationToken cancellationToken = new())
     {
         _logger.LogInformation($"Executed SQL (Async): {command.CommandText}");
         return base.ReaderExecutedAsync(command, eventData, result, cancellationToken);

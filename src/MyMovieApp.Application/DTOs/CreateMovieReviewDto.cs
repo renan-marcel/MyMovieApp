@@ -6,7 +6,6 @@ namespace MyMovieApp.Application.DTOs;
 public class CreateMovieReviewDto
 {
     [Required]
-
     [JsonPropertyName("imdb_id")]
     public string ImdbId { get; set; }
 

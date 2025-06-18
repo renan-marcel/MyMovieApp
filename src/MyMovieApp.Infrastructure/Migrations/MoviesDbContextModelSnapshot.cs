@@ -59,6 +59,31 @@ namespace MyMovieApp.Infrastructure.Migrations
                     b.ToTable("Movies", (string)null);
                 });
 
+            modelBuilder.Entity("MyMovieApp.Domain.Entities.Review", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("ImdbId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("UserOpinion")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
+
+                    b.Property<int>("UserRating")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ImdbId");
+
+                    b.ToTable("Reviews", (string)null);
+                });
+
             modelBuilder.Entity("MyMovieApp.Domain.Entities.Movie", b =>
                 {
                     b.OwnsMany("MyMovieApp.Domain.Entities.Actor", "Actor", b1 =>
@@ -86,36 +111,22 @@ namespace MyMovieApp.Infrastructure.Migrations
                                 .HasForeignKey("MovieImdbId");
                         });
 
-                    b.OwnsMany("MyMovieApp.Domain.Entities.Review", "Reviews", b1 =>
-                        {
-                            b1.Property<Guid>("Id")
-                                .ValueGeneratedOnAdd()
-                                .HasColumnType("uuid");
-
-                            b1.Property<string>("MovieImdbId")
-                                .IsRequired()
-                                .HasColumnType("text");
-
-                            b1.Property<string>("UserOpinion")
-                                .IsRequired()
-                                .HasMaxLength(1000)
-                                .HasColumnType("character varying(1000)");
-
-                            b1.Property<int>("UserRating")
-                                .HasColumnType("integer");
-
-                            b1.HasKey("Id");
-
-                            b1.HasIndex("MovieImdbId");
-
-                            b1.ToTable("Reviews", (string)null);
-
-                            b1.WithOwner()
-                                .HasForeignKey("MovieImdbId");
-                        });
-
                     b.Navigation("Actor");
+                });
 
+            modelBuilder.Entity("MyMovieApp.Domain.Entities.Review", b =>
+                {
+                    b.HasOne("MyMovieApp.Domain.Entities.Movie", "Movie")
+                        .WithMany("Reviews")
+                        .HasForeignKey("ImdbId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Movie");
+                });
+
+            modelBuilder.Entity("MyMovieApp.Domain.Entities.Movie", b =>
+                {
                     b.Navigation("Reviews");
                 });
 #pragma warning restore 612, 618

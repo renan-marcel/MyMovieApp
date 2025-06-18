@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace MyMovieApp.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class Initial : Migration
+    public partial class CreateInitial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -54,14 +54,14 @@ namespace MyMovieApp.Infrastructure.Migrations
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     UserOpinion = table.Column<string>(type: "character varying(1000)", maxLength: 1000, nullable: false),
                     UserRating = table.Column<int>(type: "integer", nullable: false),
-                    MovieImdbId = table.Column<string>(type: "text", nullable: false)
+                    ImdbId = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Reviews", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Reviews_Movies_MovieImdbId",
-                        column: x => x.MovieImdbId,
+                        name: "FK_Reviews_Movies_ImdbId",
+                        column: x => x.ImdbId,
                         principalTable: "Movies",
                         principalColumn: "ImdbId",
                         onDelete: ReferentialAction.Cascade);
@@ -73,9 +73,14 @@ namespace MyMovieApp.Infrastructure.Migrations
                 column: "MovieImdbId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Reviews_MovieImdbId",
+                name: "idx_movies_title_year",
+                table: "Movies",
+                columns: new[] { "Title", "Year" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Reviews_ImdbId",
                 table: "Reviews",
-                column: "MovieImdbId");
+                column: "ImdbId");
         }
 
         /// <inheritdoc />

@@ -2,10 +2,14 @@
 using MyMovieApp.Domain.Entities;
 
 namespace MyMovieApp.Application.Interfaces;
+
 public interface IMovieService
 {
-    Task<Movie> GetMovieByImdbIdAsync(string imdbId, CancellationToken cancellationToken);
-    Task<List<Movie>> SearchMoviesAsync(string title, int? year, CancellationToken cancellationToken);
-    Task<Movie> CreateMovieReviewAsync(string imdbId, string userOpinion, int userRating, CancellationToken cancellationToken);
-    Task<Movie> CreateMovieReviewAsync(CreateMovieReviewDto dto, CancellationToken cancellationToken);
+    Task<Movie> GetMovieByImdbIdAsync(CancellationToken cancellationToken, string imdbId);
+    Task<Movie> GetMovieByTitleAsync(CancellationToken cancellationToken, SearchRequestDto searchRequest);
+
+    Task<Movie> CreateMovieReviewAsync(CancellationToken cancellationToken, string imdbId, string userOpinion,
+        byte userRating);
+
+    Task<Movie> CreateMovieReviewAsync(CancellationToken cancellationToken, CreateMovieReviewDto dto);
 }
