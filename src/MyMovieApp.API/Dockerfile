@@ -1,53 +1,51 @@
-# Acesse https://aka.ms/customizecontainer para saber como personalizar seu contêiner de depuração e como o Visual Studio usa este Dockerfile para criar suas imagens para uma depuração mais rápida.
-
-# Esses ARGs permitem a troca da base usada para criar a imagem final durante a depuração do VS
 ARG LAUNCHING_FROM_VS
-# Isso define a imagem base definitiva, mas somente se LAUNCHING_FROM_VS tiver sido definido
 ARG FINAL_BASE_IMAGE=${LAUNCHING_FROM_VS:+aotdebug}
 
-# Esta fase é usada durante a execução no VS no modo rápido (Padrão para a configuração de Depuração)
+# This stage is used when running in VS in fast mode (Default for Debug configuration)
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
 USER $APP_UID
 WORKDIR /app
 EXPOSE 8080
 
-# Esta fase é usada para compilar o projeto de serviço
+# This stage is used to build the service project
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
-# Instalar dependências clang/zlib1g-dev para publicação no nativo
-RUN apt-get update \
-    && apt-get install -y --no-install-recommends \
-    clang zlib1g-dev
 
-# Instalar curl para health check
-USER root
-RUN apt-get update && apt-get install -y --no-install-recommends curl
-USER $APP_UID
+# Install clang/zlib1g-dev dependencies for native publishing
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+    clang zlib1g-dev
 
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 COPY ["src/MyMovieApp.API/MyMovieApp.API.csproj", "src/MyMovieApp.API/"]
+COPY ["src/MyMovieApp.Application/MyMovieApp.Application.csproj", "src/MyMovieApp.Application/"]
+COPY ["src/MyMovieApp.Domain/MyMovieApp.Domain.csproj", "src/MyMovieApp.Domain/"]
+COPY ["src/MyMovieApp.Infrastructure/MyMovieApp.Infrastructure.csproj", "src/MyMovieApp.Infrastructure/"]
 RUN dotnet restore "./src/MyMovieApp.API/MyMovieApp.API.csproj"
 COPY . .
 WORKDIR "/src/src/MyMovieApp.API"
 RUN dotnet build "./MyMovieApp.API.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
-# Esta fase é usada para publicar o projeto de serviço a ser copiado para a fase final
+# This stage is used to publish the service project to be copied to the final stage
 FROM build AS publish
 ARG BUILD_CONFIGURATION=Release
-RUN dotnet publish "./MyMovieApp.API.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=true
+RUN dotnet publish "./MyMovieApp.API.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
 
-# Esta fase é usada como base para a fase final ao iniciar no VS para dar suporte à depuração no modo normal (Padrão ao não usar a configuração de Depuração)
+# This stage is used as a base for the final stage when launching in VS to support debugging in normal mode (Default when not using Debug configuration)
 FROM base AS aotdebug
 USER root
-# Instalar o GDB para dar suporte à depuração nativa
+# Install GDB to support native debugging
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends \
-    gdb
+    && apt-get install -y --no-install-recommends \
+    gdb
+
+# Install Curl to enable Health check on Docker-Compose
+RUN apt-get update && apt-get install -y --no-install-recommends curl
+
 USER app
 
-# Esta fase é usada na produção ou quando executada no VS no modo normal (padrão quando não está usando a configuração de Depuração)
-FROM ${FINAL_BASE_IMAGE:-mcr.microsoft.com/dotnet/runtime-deps:8.0} AS final
+# This stage is used in production or when running in VS in normal mode (default when not using Debug configuration)
+FROM base AS final
 WORKDIR /app
-EXPOSE 8080
 COPY --from=publish /app/publish .
-ENTRYPOINT ["./MyMovieApp.API"]
+ENTRYPOINT ["dotnet", "MyMovieApp.API.dll"]
