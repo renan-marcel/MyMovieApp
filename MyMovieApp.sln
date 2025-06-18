@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.14.36202.13 d17.14
+VisualStudioVersion = 17.14.36202.13
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
 EndProject
@@ -20,6 +20,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyMovieApp.Application.Tests", "testes\MyMovieApp.Application.Tests\MyMovieApp.Application.Tests.csproj", "{2FEFBA8B-A879-72B6-593E-F4EEC5F36136}"
 EndProject
 Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{81DDED9D-158B-E303-5F62-77A2896D2A5A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyMovieApp.Infrastructure.Tests", "testes\MyMovieApp.Infrastructure.Tests\MyMovieApp.Infrastructure.Tests.csproj", "{94244D4F-B05F-438D-8985-1DD48B3A81EE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -55,6 +57,10 @@ Global
 		{81DDED9D-158B-E303-5F62-77A2896D2A5A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{81DDED9D-158B-E303-5F62-77A2896D2A5A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{81DDED9D-158B-E303-5F62-77A2896D2A5A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{94244D4F-B05F-438D-8985-1DD48B3A81EE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{94244D4F-B05F-438D-8985-1DD48B3A81EE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{94244D4F-B05F-438D-8985-1DD48B3A81EE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{94244D4F-B05F-438D-8985-1DD48B3A81EE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -66,6 +72,7 @@ Global
 		{97A354DC-7CE1-4B13-AAFF-019EC59A1C0D} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 		{84374D55-E5F4-FF21-0DAB-89B16F1756C0} = {ACA86F45-531A-4EFF-BBE5-7840F703A1F8}
 		{2FEFBA8B-A879-72B6-593E-F4EEC5F36136} = {ACA86F45-531A-4EFF-BBE5-7840F703A1F8}
+		{94244D4F-B05F-438D-8985-1DD48B3A81EE} = {ACA86F45-531A-4EFF-BBE5-7840F703A1F8}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {223C912F-E9EB-4058-8AD7-8C953C11EF20}
